@@ -135,3 +135,23 @@ export interface TimeLineParams {
     contentType?: 'json' | 'csv';
     key: string;
 }
+
+export interface TemperatureData {
+  max: number;
+  min: number;
+  current: number;
+  feelsLike: number;
+}
+
+export interface PrecipitationData {
+  amount: number;
+  probability: number;
+  type: string[] | null;
+  coverage: number;
+}
+
+export interface WindData {
+  speed: number;
+  gust: number;
+  direction: number;
+}
