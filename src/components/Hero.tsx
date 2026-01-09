@@ -1,5 +1,5 @@
 import '../styles/Hero.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import getWeather from '../services/WeatherService';
 import type { WeatherResponse } from '../services/WeatherInterfaces';
 
@@ -89,20 +89,28 @@ function Hero() {
      */
     return (
         <div>
-            <h1>Clima en CDMX</h1>
-            <input value={location} onChange={(e) => setLocation(e.target.value)}></input>
-            <button onClick={() => fetchWeather()}>Buscar</button>
-            <pre>
-                <code>
-                    {JSON.stringify(weather, null, 2)}
-                </code>
-            </pre>
+            <h1>Clima en {weather?.address}</h1>
+            <div className="weather-data">
+                <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder='Ingresa una ciudad'></input>
+                <button onClick={() => fetchWeather()}>Buscar</button>
+            </div>
+            
+            {loading && <p>Cargando...</p>}
 
-            {error && 
-            <p>Error: {error}</p>
-            }
-        </div>
-    );
-}
+            {error && <p>Error: {error}</p>}
+
+            {weather && (
+            <div>
+                <div>Temperatura actual: {weather?.days[0]?.temp}°C</div>
+                <div>Máxima: {weather?.days[0]?.tempmax}°C</div>
+                <div>Mínima: {weather?.days[0]?.tempmin}°C</div>
+                <div>Condiciones: {weather?.days[0]?.conditions}</div>
+                <div>Velocidad del viento: {weather?.currentConditions?.windspeed} km/h</div>
+                <div>Probabilidad de lluvia: {weather?.days[0]?.precip} %</div>
+            </div>
+    )}
+
+    </div>
+)};
 
 export default Hero;
