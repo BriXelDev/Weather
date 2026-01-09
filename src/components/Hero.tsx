@@ -27,7 +27,9 @@ function Hero() {
      * - Se pone en false cuando termina la petición (exitosa o con error)
      * - Se usa para mostrar "Cargando..." mientras esperamos
      */
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const [location, setLocation] = useState('Mexico City, MX');
     
     /**
      * ESTADO: error
@@ -38,19 +40,11 @@ function Hero() {
     const [error, setError] = useState<string | null>(null);
 
     /**
-     * EFECTO: useEffect
-     * - Se ejecuta una sola vez cuando el componente se monta ([] significa dependencias vacías)
-     * - Aquí es donde hacemos la petición a la API
-     * - Sin el array vacío [], se ejecutaría en cada render y tendríamos requests infinitos
+     * FUNCIÓN: fetchWeather
+     * - Es asíncrona porque va a esperar la respuesta de fetch
+     * - Definida fuera de useEffect para poder usarla en múltiples lugares
      */
-    useEffect(() => {
-        /**
-         * FUNCIÓN: fetchWeather
-         * - Es asíncrona porque va a esperar la respuesta de fetch
-         * - Está dentro de useEffect porque useEffect no puede ser async directamente
-         * - Por eso la definimos adentro y la llamamos inmediatamente
-         */
-        const fetchWeather = async () => {
+    const fetchWeather = async () => {
             try {
                 /**
                  * PASO 1: Hacer la petición a la API
@@ -60,7 +54,7 @@ function Hero() {
                  * - unitGroup: 'metric' usa Celsius, 'us' usa Fahrenheit
                  */
                 const data = await getWeather({
-                    location: 'Mexico City, MX',
+                    location: location,
                     key: 'WBSD3AJHFK6PB3WQS2AW29VBF',
                     unitGroup: 'metric',
                 });
@@ -85,23 +79,7 @@ function Hero() {
                  */
                 setLoading(false);
             }
-        };
-
-        // Llamar la función asíncrona
-        fetchWeather();
-    }, []); // Array vacío = ejecutar solo una vez cuando el componente se monta
-
-    /**
-     * RENDERIZADO 1: Mientras está cargando
-     * Mostramos un mensaje de carga si loading es true
-     */
-    if (loading) return <div><h1>Clima en CDMX</h1><p>Cargando...</p></div>;
-    
-    /**
-     * RENDERIZADO 2: Si hay error
-     * Mostramos el mensaje de error si error no es null
-     */
-    if (error) return <div><h1>Clima en CDMX</h1><p>Error: {error}</p></div>;
+    };
 
     /**
      * RENDERIZADO 3: Si todo va bien
@@ -112,11 +90,17 @@ function Hero() {
     return (
         <div>
             <h1>Clima en CDMX</h1>
+            <input value={location} onChange={(e) => setLocation(e.target.value)}></input>
+            <button onClick={() => fetchWeather()}>Buscar</button>
             <pre>
                 <code>
                     {JSON.stringify(weather, null, 2)}
                 </code>
             </pre>
+
+            {error && 
+            <p>Error: {error}</p>
+            }
         </div>
     );
 }
